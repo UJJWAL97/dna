@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cstring>
+#include <algorithm>
 
 using namespace std;
 #define gap_penalty  2
@@ -34,10 +36,74 @@ int score_calculator(char a,char b){
     else
         return mismatch_penalty;
 }
+char trackback(int** arr,int i,int j,string& str1,string& str2) {
+    int current = arr[i][j];
+    int diagonal = arr[i - 1][j - 1];
+    int up = arr[i][j - 1];
+    int left = arr[i - 1][j];
+    if(current==up+gap_penalty ){
+        if(current==diagonal+score_calculator(str1[j-1],str2[i-1])) {
+            return '_';
+        }
+        else if(current==left+gap_penalty){
+            char res_left= trackback(arr,i-1,j,str1,str2);
+            char res_up=trackback(arr,i,j-1,str1,str2);
+            if(res_left=='_' or res_up=='_')
+                return '_';
+            else if(res_left=='A' or res_up=='A')
+                return 'A';
+            else if(res_left=='C' or res_up=='C')
+                return 'C';
+            else if(res_left=='G' or res_up=='G')
+                return 'G';
+            else if(res_left=='T' or res_up=='T')
+                return 'T';
+        }
+        else{
+            return '_';
+
+        }
+    }
+    else if(current==left+gap_penalty){
+
+        if(current==diagonal+score_calculator(str1[j-1],str2[i-1])) {
+            return '_';
+
+        }
+        else if(current==up+gap_penalty){
+            char res_left= trackback(arr,i-1,j,str1,str2);
+            char res_up=trackback(arr,i,j-1,str1,str2);
+            if(res_left=='_' or res_up=='_')
+                return '_';
+            else if(res_left=='A' or res_up=='A')
+                return 'A';
+            else if(res_left=='C' or res_up=='C')
+                return 'C';
+            else if(res_left=='G' or res_up=='G')
+                return 'G';
+            else if(res_left=='T' or res_up=='T')
+                return 'T';
+
+        }
+        else{
+            return '_';
+
+        }
+
+
+    }
+    else if(current==diagonal+score_calculator(str1[j-1],str2[i-1])){
+        return str2[i-1];
+    }
+
+
+
+
+}
 
 int scorer(string& str1,string& str2){
-    int m=str1.length();
-    int n=str2.length();
+    int n=str1.length();
+    int m=str2.length();
     int i,j;
     int match,up,side;
     int** arr=init_matrix(m+1,n+1);
@@ -56,40 +122,177 @@ int scorer(string& str1,string& str2){
 
 
         }
+    printer(m+1,n+1,arr);
+
     string x="";
     string y="";
     i=m;
     j=n;
+    int score=0;
     while (i>0 and j>0){
         int current = arr[i][j];
         int diagonal = arr[i-1][j-1];
         int up = arr[i][j-1];
         int left = arr[i-1][j];
 
-        if(current==up+gap_penalty){
-            x.append(str1[j-1],1);
-            y.append("_");
-            j--;
+        if(current==up+gap_penalty ){
+            if(current==diagonal+score_calculator(str1[j-1],str2[i-1])) {
+                x=x+str1[j - 1];
+                y=y+"_";
+                j--;
+                score+=gap_penalty;
+            }
+            else if(current==left+gap_penalty){
+                char res_up=trackback(arr,i,j-1,str1,str2);
+                char res_left=trackback(arr,i-1,j,str1,str2);
+                if(res_up=='_'){
+                    x=x+str1[j - 1];
+                    y=y+"_";
+                    j--;
+                    score+=gap_penalty;
 
+                }
+                else if(res_left=='_'){
+                    y=y+str2[i-1];
+                    x=x+"_";
+                    i--;
+                    score+=gap_penalty;
+
+                }
+
+                else if(res_up=='A'){
+                    x=x+str1[j - 1];
+                    y=y+"_";
+                    j--;
+                    score+=gap_penalty;
+
+                }
+                else if(res_left=='A'){
+                    y=y+str2[i-1];
+                    x=x+"_";
+                    i--;
+                    score+=gap_penalty;
+
+                }
+
+                else if(res_up=='C'){
+                    x=x+str1[j - 1];
+                    y=y+"_";
+                    j--;
+                    score+=gap_penalty;
+
+                }
+                else if(res_left=='C'){
+                    y=y+str2[i-1];
+                    x=x+"_";
+                    i--;
+                    score+=gap_penalty;
+
+                }
+
+                else if(res_up=='G'){
+                    x=x+str1[j - 1];
+                    y=y+"_";
+                    j--;
+                    score+=gap_penalty;
+
+                }
+                else if(res_left=='G'){
+                    y=y+str2[i-1];
+                    x=x+"_";
+                    i--;
+                    score+=gap_penalty;
+
+                }
+
+                else if(res_up=='T'){
+                    x=x+str1[j - 1];
+                    y=y+"_";
+                    j--;
+                    score+=gap_penalty;
+
+                }
+                else if(res_left=='T'){
+                    y=y+str2[i-1];
+                    x=x+"_";
+                    i--;
+                    score+=gap_penalty;
+
+                }
+
+
+            }
+            else{
+                x=x+str1[j - 1];
+                y=y+"_";
+                j--;
+                score+=gap_penalty;
+
+            }
         }
         else if(current==left+gap_penalty){
-            y.append(str2[i-1],1);
-            x.append("_");
-            i--;
+
+            if(current==diagonal+score_calculator(str1[j-1],str2[i-1])) {
+                y=y+str2[i-1];
+                x=x+"_";
+                i--;
+                score+=gap_penalty;
+
+            }
+            else if(current==up+gap_penalty){
+
+
+            }
+            else{
+                y=y+str2[i-1];
+                x=x+"_";
+                i--;
+                score+=gap_penalty;
+
+            }
 
         }
-        else
+        else if(current==diagonal+score_calculator(str1[j-1],str2[i-1])){
+            x=x+str1[j-1];
+            y=y+str2[i-1];
+            if(score_calculator(str1[j-1],str2[i-1])==mismatch_penalty)
+                score+=mismatch_penalty;
+            i--;
+            j--;
+
+
+
+        }
 
     }
-    printer(m+1,n+1,arr);
+    while (j>0){
+        x=x+str1[j-1];
+        y=y+"_";
+        j--;
+
+    }
+    while (i>0){
+        y=y+(str2[i-1]);
+        x=x+"_";
+        i--;
+
+    }
+
+
+
+    reverse(x.begin(), x.end());
+    reverse(y.begin(), y.end());
+    cout<<score<<endl;
+    cout<<x<<endl;
+    cout<<y<<endl;
 
 
 }
 
 
 int main() {
-    string seq1 = "ATTACA";
-    string seq2 = "ATGCT";
-     scorer(seq1,seq2);
+    string seq1 = "GGGAATCACGAGAGCAGACAGATCACACAGGTTTATGGGTTCTACGACGAGTGTTTA";
+    string seq2 = "GGGAATCATGAGAGCAGACGATCACACAAGTTTATGGTTTCTATGATGAATGTTTA";
+    scorer(seq1,seq2);
     return 0;
 }
